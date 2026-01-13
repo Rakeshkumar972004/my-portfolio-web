@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Particles from "react-tsparticles";
 import { Canvas } from "@react-three/fiber";
@@ -10,15 +10,41 @@ import {
   FaLinkedin,
   FaWhatsapp,
   FaInstagram,
- FaDownload 
-
+  FaDownload,
+  FaBars,
+  FaTimes,
 } from "react-icons/fa";
 
 export default function Hero() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <div style={container}>
-      {/* ANIMATED GRADIENT BACKGROUND */}
-      {/* <div style={animatedBg} /> */}
+      {/* MENU BUTTON (MOBILE ONLY) */}
+      <div
+        className="menu-btn"
+        style={menuBtn}
+        onClick={() => setMenuOpen((prev) => !prev)}
+      >
+        {menuOpen ? <FaTimes /> : <FaBars />}
+      </div>
+
+      {/* MOBILE MENU */}
+      {menuOpen && (
+        <motion.div
+          initial={{ x: "100%" }}
+          animate={{ x: 0 }}
+          exit={{ x: "100%" }}
+          transition={{ duration: 0.35 }}
+          style={mobileMenu}
+        >
+          <a href="#home" onClick={() => setMenuOpen(false)}>Home</a>
+          <a href="#about" onClick={() => setMenuOpen(false)}>About</a>
+          <a href="#education" onClick={() => setMenuOpen(false)}>Education</a>
+          <a href="#projects" onClick={() => setMenuOpen(false)}>Projects</a>
+          <a href="#contact" onClick={() => setMenuOpen(false)}>Contact</a>
+        </motion.div>
+      )}
 
       {/* GLOW ORBS */}
       <div style={{ ...glowOrb, top: "20%", left: "15%" }} />
@@ -41,18 +67,24 @@ export default function Hero() {
             },
           },
           interactivity: {
-            events: {
-              onHover: { enable: true, mode: "repulse" },
-            },
+            events: { onHover: { enable: true, mode: "repulse" } },
           },
         }}
-        style={{ position: "absolute", inset: 0 }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+        }}
       />
 
-      {/* 3D BACKGROUND */}
+      {/* 3D CANVAS */}
       <Canvas
         dpr={[1, 1.5]}
-        style={{ position: "absolute", inset: 0 }}
+        style={{
+          position: "absolute",
+          inset: 0,
+          pointerEvents: "none",
+        }}
       >
         <ambientLight intensity={0.6} />
         <directionalLight position={[5, 5, 5]} />
@@ -77,6 +109,7 @@ export default function Hero() {
             options={{
               strings: [
                 "Full Stack Developer",
+                "Frontend Specialist",
                 "React Developer",
                 "JavaScript Enthusiast",
                 "Problem Solver",
@@ -104,16 +137,14 @@ export default function Hero() {
           </motion.a>
 
           <motion.a
-  href="/resume/Rakeshkumar-Full-Stack-Developer.pdf"
-  download="Rakeshkumar-Resume.pdf"
-  whileHover={{ scale: 1.08 }}
-  whileTap={{ scale: 0.95 }}
-  style={outlineBtn}
->
-  Download CV
-  <FaDownload style={{ marginLeft: "8px" }} />
-</motion.a>
-
+            href="/resume/Rakeshkumar-Full-Stack-Developer.pdf"
+            download
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.95 }}
+            style={outlineBtn}
+          >
+            Download CV <FaDownload style={{ marginLeft: 8 }} />
+          </motion.a>
         </div>
 
         {/* SOCIAL ICONS */}
@@ -125,18 +156,34 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* INLINE ANIMATIONS */}
+      {/* GLOBAL STYLES */}
       <style>
         {`
-          @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+          @keyframes float {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-40px); }
           }
 
-          @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-40px); }
+          /* HIDE MENU ICON ON DESKTOP */
+          .menu-btn {
+            display: none;
+          }
+
+          /* SHOW MENU ICON ON MOBILE & TABLET */
+          @media (max-width: 768px) {
+            .menu-btn {
+              display: block;
+            }
+          }
+
+          .menu-btn svg {
+            color: #fff;
+          }
+
+          a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 18px;
           }
         `}
       </style>
@@ -157,15 +204,30 @@ const container = {
   justifyContent: "center",
 };
 
-// const animatedBg = {
-//   position: "absolute",
-//   inset: 0,
-//   background: "linear-gradient(-45deg, #0e0e0e, #1a1a1a, #ff9800, #ff5722)",
-//   backgroundSize: "400% 400%",
-//   animation: "gradientBG 12s ease infinite",
-//   opacity: 0.15,
-//   zIndex: 0,
-// };
+const menuBtn = {
+  position: "fixed",
+  top: "20px",
+  right: "20px",
+  zIndex: 9999,
+  fontSize: "26px",
+  cursor: "pointer",
+  pointerEvents: "auto",
+};
+
+const mobileMenu = {
+  position: "fixed",
+  top: 0,
+  right: 0,
+  height: "100vh",
+  width: "260px",
+  background: "#111",
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "center",
+  paddingLeft: "40px",
+  gap: "25px",
+  zIndex: 9998,
+};
 
 const glowOrb = {
   position: "absolute",
@@ -185,21 +247,9 @@ const content = {
   padding: "20px",
 };
 
-const title = {
-  fontSize: "42px",
-  marginBottom: "10px",
-};
-
-const subtitle = {
-  fontSize: "22px",
-  minHeight: "30px",
-};
-
-const description = {
-  opacity: 0.85,
-  marginTop: "15px",
-  fontSize: "15px",
-};
+const title = { fontSize: "42px", marginBottom: "10px" };
+const subtitle = { fontSize: "22px", minHeight: "30px" };
+const description = { opacity: 0.85, marginTop: "15px", fontSize: "15px" };
 
 const btnGroup = {
   marginTop: "25px",
@@ -212,11 +262,9 @@ const btnGroup = {
 const primaryBtn = {
   padding: "12px 28px",
   borderRadius: "30px",
-  background: "linear-gradient(135deg, #ff9800, #ff5722, #22deffff)",
+  background: "linear-gradient(135deg,#ff9800,#ff5722)",
   color: "#fff",
-  fontWeight: "600",
-  textDecoration: "none",
-  boxShadow: "0 10px 25px rgba(255,152,0,0.4)",
+  fontWeight: 600,
 };
 
 const outlineBtn = {
@@ -224,8 +272,7 @@ const outlineBtn = {
   borderRadius: "30px",
   border: "2px solid #ff9800",
   color: "#ff9800",
-  fontWeight: "600",
-  textDecoration: "none",
+  fontWeight: 600,
 };
 
 const socials = {
